@@ -1,0 +1,402 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "API Title",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "description": "Register User",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "minLength": 8
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User successfully registered",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "description": "Login User",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "email",
+                                    "password"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User successfully logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "user": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "format": "email"
+                                                }
+                                            }
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "description": "Logout User",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User successfully logged out"
+                    }
+                }
+            }
+        },
+        "/api/expenses": {
+            "post": {
+                "description": "Tambah Catatan Pengeluaran",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "amount": {
+                                        "type": "number"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "amount",
+                                    "date"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Catatan Pengeluaran berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "amount": {
+                                                    "type": "number"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            }
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "description": "Lihat Catatan Pengeluaran",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "description": "Tanggal awal rentang filter (format: YYYY-MM-DD)"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        },
+                        "description": "Tanggal akhir rentang filter (format: YYYY-MM-DD)"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Daftar catatan pengeluaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "amount": {
+                                                        "type": "number"
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/expenses/{id}": {
+            "patch": {
+                "description": "Perbarui Catatan Pengeluaran",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Data yang ingin diperbarui",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "amount": {
+                                        "type": "number"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Catatan Pengeluaran berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "title": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "amount": {
+                                                    "type": "number"
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            }
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Hapus Catatan Pengeluaran",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Catatan Pengeluaran berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
